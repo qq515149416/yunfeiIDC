@@ -1,0 +1,103 @@
+<form class="layui-form" action="{:url(($formData ?  'home/EngineRoom/edit' : 'home/EngineRoom/add'))}{$formData ? '?id='.$formData['id'] : ''}" method="POST">
+  <div class="layui-form-item">
+    <label class="layui-form-label">缩略图</label>
+    <div class="layui-input-block">
+        <button type="button" class="layui-btn" id="thumbnail">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+        </button>
+        <input type="text" value="{$formData ? $formData['thumbnail'] : ''}" name="thumbnail" required lay-verify="required" placeholder="请输入图片路径" style="display: none;" autocomplete="off" class="layui-input"> 
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">机房名称</label>
+    <div class="layui-input-block">
+      <input type="text" name="name" value="{$formData ? $formData['name'] : ''}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">机房描述</label>
+    <div class="layui-input-block">
+      <textarea name="description" placeholder="请输入描述" class="layui-textarea">{$formData ? $formData['description'] : ''}</textarea>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">机房等级</label>
+    <div class="layui-input-block">
+      <input type="text" name="grade" value="{$formData ? $formData['grade'] : ''}" required  lay-verify="required" placeholder="请输入等级" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">机房位置</label>
+    <div class="layui-input-block">
+      <input type="text" name="position" value="{$formData ? $formData['position'] : ''}" required  lay-verify="required" placeholder="请输入位置" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">服务支持</label>
+    <div class="layui-input-block">
+      <input type="text" name="support" value="{$formData ? $formData['support'] : ''}" required  lay-verify="required" placeholder="请输入支持" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">出口带宽</label>
+    <div class="layui-input-block">
+      <input type="text" name="bandwidth" value="{$formData ? $formData['bandwidth'] : ''}" required  lay-verify="required" placeholder="请输入带宽" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">机房IP段</label>
+    <div class="layui-input-block">
+      <input type="text" name="ip_part" value="{$formData ? $formData['ip_part'] : ''}" required  lay-verify="required" placeholder="请输入IP段" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="post">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+</form>  
+  {include file="system@block/layui" /}
+  <script type="text/javascript" src="__ADMIN_MOD_JS__/jquery-3.4.1.min.js"></script>
+  <script>
+  layui.link("__ADMIN_MOD_CSS__/form.css");
+  //Demo
+  layui.use('upload', function(){
+    var upload = layui.upload;
+    
+    //执行实例
+    initUpload(upload);
+  });
+  function initUpload(upload) {
+    var inputThumbnail = $("input[name='thumbnail']");
+    var oThumbnail = $("#thumbnail");
+    if(inputThumbnail.val()) {
+      oThumbnail.replaceWith("<img width='114px' id='thumbnail' src='"+inputThumbnail.val()+"' />");
+    }
+    var uploadInst = upload.render({
+      elem: '#thumbnail' //绑定元素
+      ,url: '{:url("home/EngineRoom/upload")}' //上传接口
+      ,done: function(res){
+        //上传完毕回调
+        console.log(res);
+        if(res.code==1) {
+          inputThumbnail.val(res.data.file);
+          oThumbnail.replaceWith("<img width='114px' id='thumbnail' src='"+res.data.file+"' />");
+          initUpload(upload);
+        }
+      }
+      ,error: function(){
+        //请求异常回调
+      }
+    });
+  }
+  layui.use('form', function(){
+    var form = layui.form;
+    
+    //监听提交
+    // form.on('submit(post)', function(data){
+    //   layer.msg(JSON.stringify(data.field));
+    //   return false;
+    // });
+  });
+  </script>

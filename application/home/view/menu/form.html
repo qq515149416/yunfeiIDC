@@ -1,0 +1,149 @@
+<form class="layui-form" action="{:url(($formData ?  'home/Menu/edit' : 'home/Menu/add'))}{$formData ? '?id='.$formData['id'] : ''}" method="POST">
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级</label>
+        <div class="layui-input-block">
+            <select name="parent" value="{$formData ? $formData['parent']['id'] : '0'}" lay-verify="required">
+                <option value="0">一级导航</option>
+            </select> 
+        </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="name" value="{$formData ? $formData['name'] : ''}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block">
+            <textarea name="description" placeholder="请输入描述" class="layui-textarea">{$formData ? $formData['description'] : ''}</textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">关键词</label>
+      <div class="layui-input-block">
+        <input type="text" name="keywords" value="{$formData ? $formData['keywords'] : ''}" required  lay-verify="required" placeholder="请输入关键词(多个关键词用,分割)" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">模板</label>
+      <div class="layui-input-block">
+            <select name="template" lay-filter="template" value="{$formData ? $formData['template'] : 'home/EngineRoom/index'}" lay-verify="required">
+                <option value="home/EngineRoom/index">机房页模板</option>
+                <option value="home/Goods/index">服务器页模板</option>
+                <option value="home/ArticleList/index">文章列表页模板</option>
+                <option value="home/Article/index">文章内容页模板</option>
+                <option value="home/Page/index">单页模板</option>
+                <option value="home/GotoPage/index">外部跳转</option>
+            </select> 
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">参数</label>
+      <div class="layui-input-block">
+        <input type="text" name="param" value="{$formData ? $formData['param'] : ''}" required  lay-verify="required" placeholder="请输入参数" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="post">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>  
+    {include file="system@block/layui" /}
+    <script type="text/javascript" src="__ADMIN_MOD_JS__/jquery-3.4.1.min.js"></script>
+    <script>
+    layui.link("__ADMIN_MOD_CSS__/form.css");
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        var templateValue = $("select[name='template']").attr("value");
+        getParamSelect("home_nav",function(data) {
+            renderNavSelect(data);
+        });
+        $("select[name='template'] option").each(function(i) {
+            if(templateValue===$(this).attr("value")) {
+                $(this).attr("selected","true");
+            }
+        });
+        renderSelect(templateValue);
+        form.on('select(template)', function(data){
+            renderSelect(data.value);
+        });
+        function renderParamSelect(data) {
+            if($("input[name='param']").length) {
+                var value = Number($("input[name='param']").val());
+                var optionDomStr = '<select name="param" value="'+value+'" lay-verify="required">';
+                optionDomStr += '<option value="">请选择</option>';
+                if(value) {
+                    optionDomStr += data.map((item,index) => `<option ${value===item.id ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                } else {
+                    optionDomStr += data.map((item,index) => `<option ${index===0 ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                }
+                optionDomStr += "</select>";
+                $("input[name='param']").replaceWith(optionDomStr);
+            } else {
+                var optionDomStr = '';
+                optionDomStr += data.map((item,index) => `<option ${index===0 ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                $("select[name='param']").empty().append(optionDomStr);
+            }
+            form.render('select');
+        }
+        function renderNavSelect(data) {
+            var value = Number($("select[name='parent']").attr("value"));
+            var optionDomStr = '<option value="0">一级导航</option>';
+            if(value) {
+                optionDomStr += data.map((item,index) => `<option ${value===item.id ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+            } else {
+                optionDomStr += data.map((item,index) => `<option value="${item.id}">${item.name}</option>`);
+            }
+            $("select[name='parent']").empty().append(optionDomStr);
+            form.render('select');
+        }
+        function getParamSelect(operat,callbrak) {
+            $.get("{:url('home/Menu/select')}",{
+                operat: operat
+            },function(res) {
+                if(res.code==1) {
+                    if(callbrak) {
+                        callbrak(res.data,renderParamSelect);
+                    } else {
+                        renderParamSelect(res.data);
+                    }
+                }
+            });
+        }
+        function renderSelect(value) {
+            switch(value) {
+                case "home/EngineRoom/index":
+                case "home/Goods/index":
+                    getParamSelect("home_engine_room");
+                break;
+                case "home/ArticleList/index":
+                    getParamSelect("home_article_type");
+                break;
+                case "home/Article/index":
+                    getParamSelect("home_article",function(data,render) {
+                        data = data.map(item => {
+                            item.name = item.title;
+                            return item;
+                        });
+                        render(data);
+                    });
+                break;
+                default:
+                    if(!$("input[name='param']").length) {
+                        var optionDomStr = '<input type="text" name="param" value="" required  lay-verify="required" placeholder="请输入参数" autocomplete="off" class="layui-input">';
+                        $("select[name='param']").parent().empty().append(optionDomStr);
+                    }
+            }
+        }
+       
+        //监听提交
+        // form.on('submit(post)', function(data){
+        //   layer.msg(JSON.stringify(data.field));
+        //   return false;
+        // });
+        });
+    </script>

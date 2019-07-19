@@ -1,0 +1,26 @@
+<table class="layui-table">
+    <colgroup>
+      <col width="200">
+      <col>
+    </colgroup>
+    <thead>
+      <tr>
+        <th>标题</th>
+        <th>描述</th>
+      </tr> 
+    </thead>
+    <tbody>
+        {volist name="rows" id="vo" }
+        <tr>
+            <td>{$vo.label}</td>
+            <td>
+                {if $vo.value == 'engine_room' }
+                    {$data[$vo.value]['name']}
+                {else /}
+                    {$data[$vo.value]}
+                {/if}
+            </td>
+        </tr>
+        {/volist}
+    </tbody>
+  </table>

@@ -1,0 +1,80 @@
+<form class="layui-form" action="{:url(($formData ?  'home/Recommend/edit' : 'home/Recommend/add'))}{$formData ? '?id='.$formData['id'] : ''}" method="POST">
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属机器</label>
+        <div class="layui-input-block">
+            <select name="machine" value="{$formData ? $formData['machine']['id'] : ''}" lay-verify="required">
+                <option value="">请选择所属机器</option>
+            </select> 
+        </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">机器配置</label>
+      <div class="layui-input-block">
+        <input type="text" name="config" value="{$formData ? $formData['config'] : ''}" required  lay-verify="required" placeholder="请输入机器配置" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">网络线路</label>
+      <div class="layui-input-block">
+        <input type="text" name="circuit" value="{$formData ? $formData['circuit'] : ''}" required  lay-verify="required" placeholder="请输入网络线路" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">网络结构</label>
+      <div class="layui-input-block">
+        <input type="text" name="network_structure" value="{$formData ? $formData['network_structure'] : ''}" required  lay-verify="required" placeholder="请输入网络结构" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">防御类型</label>
+      <div class="layui-input-block">
+        <input type="text" name="type_defense" value="{$formData ? $formData['type_defense'] : ''}" required  lay-verify="required" placeholder="请输入防御类型" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">友情提示</label>
+      <div class="layui-input-block">
+        <input type="text" name="tip" value="{$formData ? $formData['tip'] : ''}" required  lay-verify="required" placeholder="请输入友情提示" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">机器类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="type" value="1" title="云服务器" {$formData ? ($formData['type'] === 1 ? 'checked' : '') : 'checked'}>
+            <input type="radio" name="type" value="2" title="独立服务器" {$formData ? ($formData['type'] === 2 ? 'checked' : '') : ''}>
+        </div>
+      </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="post">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>  
+    {include file="system@block/layui" /}
+    <script type="text/javascript" src="__ADMIN_MOD_JS__/jquery-3.4.1.min.js"></script>
+    <script>
+    layui.link("__ADMIN_MOD_CSS__/form.css");
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        $.get("{:url('home/Recommend/select')}",function(res) {
+            if(res.code==1) {
+                var optionDomStr = '';
+                if($("select[name='machine']").attr("value")) {
+                  optionDomStr += res.data.map((item,index) => `<option ${Number($("select[name='machine']").attr("value"))===item.id ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                } else {
+                  optionDomStr += res.data.map((item,index) => `<option ${index===0 ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                }
+                // console.log($("select[name='engine_room']"));
+                $("select[name='machine']").empty().append(optionDomStr);
+                form.render('select');
+            }
+        });
+      //监听提交
+      // form.on('submit(post)', function(data){
+      //   layer.msg(JSON.stringify(data.field));
+      //   return false;
+      // });
+    });
+    </script>

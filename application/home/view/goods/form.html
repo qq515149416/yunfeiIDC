@@ -1,0 +1,85 @@
+<form class="layui-form" action="{:url(($formData ?  'home/Goods/edit' : 'home/Goods/add'))}{$formData ? '?id='.$formData['id'] : ''}" method="POST">
+    <div class="layui-form-item">
+      <label class="layui-form-label">名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="name" value="{$formData ? $formData['name'] : ''}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">机房</label>
+      <div class="layui-input-block">
+        <select name="engine_room" value="{$formData ? $formData['engine_room'] : ''}" lay-verify="required">
+            <option value="">请选择所属机房</option>
+        </select> 
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">CPU</label>
+      <div class="layui-input-block">
+        <input type="text" name="cpu" value="{$formData ? $formData['cpu'] : ''}" required  lay-verify="required" placeholder="请输入CPU" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">内存</label>
+      <div class="layui-input-block">
+        <input type="text" name="ram" value="{$formData ? $formData['ram'] : ''}" required  lay-verify="required" placeholder="请输入内存" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">IP</label>
+      <div class="layui-input-block">
+        <input type="text" name="ip" value="{$formData ? $formData['ip'] : ''}" required  lay-verify="required" placeholder="请输入IP" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">带宽</label>
+      <div class="layui-input-block">
+        <input type="text" name="bandwidth" value="{$formData ? $formData['bandwidth'] : ''}" required  lay-verify="required" placeholder="请输入带宽" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">防御</label>
+      <div class="layui-input-block">
+        <input type="text" name="defense" value="{$formData ? $formData['defense'] : ''}" required  lay-verify="required" placeholder="请输入防御" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-block">
+            <input type="text" name="price" value="{$formData ? $formData['price'] : ''}" required  lay-verify="required" placeholder="请输入价格" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="post">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>  
+    {include file="system@block/layui" /}
+    <script type="text/javascript" src="__ADMIN_MOD_JS__/jquery-3.4.1.min.js"></script>
+    <script>
+    layui.link("__ADMIN_MOD_CSS__/form.css");
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        $.get("{:url('home/Goods/select')}",function(res) {
+            if(res.code==1) {
+                var optionDomStr = '';
+                if($("select[name='engine_room']").val()) {
+                  optionDomStr += res.data.map((item,index) => `<option ${$("select[name='engine_room']").val()===item.id ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                } else {
+                  optionDomStr += res.data.map((item,index) => `<option ${index===0 ? 'selected' : ''} value="${item.id}">${item.name}</option>`);
+                }
+                // console.log($("select[name='engine_room']"));
+                $("select[name='engine_room']").empty().append(optionDomStr);
+                form.render('select');
+            }
+        });
+      //监听提交
+      // form.on('submit(post)', function(data){
+      //   layer.msg(JSON.stringify(data.field));
+      //   return false;
+      // });
+    });
+    </script>

@@ -1,0 +1,79 @@
+<form class="layui-form" action="{:url(($formData ?  'home/Carousel/edit' : 'home/Carousel/add'))}{$formData ? '?id='.$formData['id'] : ''}" method="POST">
+    <div class="layui-form-item">
+      <label class="layui-form-label">轮播图</label>
+      <div class="layui-input-block">
+          <button type="button" class="layui-btn" id="image">
+              <i class="layui-icon">&#xe67c;</i>上传图片
+          </button>
+          <input type="text" value="{$formData ? $formData['image'] : ''}" name="image" required lay-verify="required" placeholder="请输入图片路径" style="display: none;" autocomplete="off" class="layui-input"> 
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="name" value="{$formData ? $formData['name'] : ''}" required  lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">描述</label>
+      <div class="layui-input-block">
+        <textarea name="description" placeholder="请输入描述" class="layui-textarea">{$formData ? $formData['description'] : ''}</textarea>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">链接</label>
+      <div class="layui-input-block">
+        <input type="text" name="href" value="{$formData ? $formData['href'] : ''}" required  lay-verify="required" placeholder="请输入链接" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="post">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>  
+    {include file="system@block/layui" /}
+    <script type="text/javascript" src="__ADMIN_MOD_JS__/jquery-3.4.1.min.js"></script>
+    <script>
+    layui.link("__ADMIN_MOD_CSS__/form.css");
+    //Demo
+    layui.use('upload', function(){
+      var upload = layui.upload;
+      
+      //执行实例
+      initUpload(upload);
+    });
+    function initUpload(upload) {
+      var inputImage = $("input[name='image']");
+      var oImage = $("#image");
+      if(inputImage.val()) {
+        oImage.replaceWith("<img width='114px' id='image' src='"+inputImage.val()+"' />");
+      }
+      var uploadInst = upload.render({
+        elem: '#image' //绑定元素
+        ,url: '{:url("home/Carousel/upload")}' //上传接口
+        ,done: function(res){
+          //上传完毕回调
+          console.log(res);
+          if(res.code==1) {
+            inputImage.val(res.data.file);
+            oImage.replaceWith("<img width='114px' id='thumbnail' src='"+res.data.file+"' />");
+            initUpload(upload);
+          }
+        }
+        ,error: function(){
+          //请求异常回调
+        }
+      });
+    }
+    layui.use('form', function(){
+      var form = layui.form;
+      
+      //监听提交
+      // form.on('submit(post)', function(data){
+      //   layer.msg(JSON.stringify(data.field));
+      //   return false;
+      // });
+    });
+    </script>
